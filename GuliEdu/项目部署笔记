@@ -47,5 +47,5 @@ stats = 127.0.0.1:9193
             root   html;
         }
     }
-
+。。。。。
 重启Nginx命令:sudo /usr/local/etc/nginx/bin/nginx -s reload
