@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录页面</title>
+</head>
+<body>
+<a href="{% url 'users:user_register' %}">[注册]</a>
+<form method="post" action="/user_login">
+    {% csrf_token %}
+    用户名:<input type="text" id="email" name="email"><br>
+    密码:<input type="password" id="password" name="password"><br>
+    <input type="submit" id="login" value="登录">
+    <div class="error btns" id="jsEmailTips">
+        {{ msg }}
+        {% for key,err in user_login_form.errors.items %}
+            {{ err }}
+        {% endfor %}
+    </div>
+</form>
+<a href="{% url 'users:user_forget' %}">忘记密码？</a>
+</body>
+</html>

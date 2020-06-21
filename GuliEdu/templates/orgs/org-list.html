@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load staticfiles %}
+<script src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
+<head>
+    <meta charset="UTF-8">
+    <title>课程机构列表-谷粒教育网</title>
+</head>
+<body>
+<li><a href="/">首页</a>>课程机构</li><br>
+机构类别：
+<a href="?city=?&cityid={{ cityid }}&sort={{ sort }}"><span>全部</span></a>
+<a href="?cate=pxjg&cityid={{ cityid }}&sort={{ sort }}"><span>培训机构</span></a>
+<a href="?cate=gx&cityid={{ cityid }}&sort={{ sort }}"><span>高校</span></a>
+<a href="?cate=gr&cityid={{ cityid }}&sort={{ sort }}"><span>个人</span></a>
+<br>
+所在地区：
+<a href="?city="><span>全部</span></a>
+{% for city in all_citys %}
+<a href="?cityid={{ city.id }}&cate={{ cate }}&sort={{ sort }}"><span>{{ city.name }}</span></a>
+{% endfor %}
+<br>
+{% for city in all_citys %}
+    城市:{{ city.name }}
+{% endfor %}
+共{{ all_orgs.count }}家<br>
+<a href="?cityid={{ cityid }}&cate={{ cate }}">全部</a>
+<a href="?sort=study_num&cityid={{ cityid }}&cate={{ cate }}">学习人数 &#8595;</a>
+<a href="?sort=course_num&cityid={{ cityid }}&cate={{ cate }}">课程数 &#8595;</a>
+<br>
+{% for org in all_orgs %}
+    <a href="{% url 'orgs:org_detail' org.id %}">
+        <img width="200" height="120" class="scrollLoading" src="{{ MEDIA_URL }}{{ org.image }}">
+    </a>
+    <a href="{% url 'orgs:org_detail' org.id %}">
+        {{ org.name }}
+    </a>
+    课程数：{{ org.course_num }}
+    学习人数：{{ org.study_num }}
+    地址:{{ org.address }}
+    <br>
+{% endfor %}
+<br>
+    经典课程:
+    {% for course in org.courseinfo_set.all|slice:':2' %}
+        <a href="{% url 'courses:course_detail' course.id %}">{{ course.name }}</a>
+    {% endfor %}
+<br>
+授课机构排名
+<br>
+{% for org in sort_orgs %}
+    {{ forloop.counter }}
+    <a href="{% url 'orgs:org_detail' org.id %}">
+        {{ org.name }}
+    </a>
+    {{ org.cityinfo.name }}
+    <br>
+{% endfor %}
+<br>
+{% if pages.has_previous %}
+<li><a href="?pagenum={{ pages.previous_page_number }}&cate={{ cate }}&cityid={{ cityid }}&sort={{ sort }}&={{ keyword }}">上一页</a></li>
+{% endif %}
+{% for num in pages.paginator.page_range %}
+<li><a href="?pagenum={{ num }}&cate={{ cate }}&cityid={{ cityid }}&sort={{ sort }}&={{ keyword }}">{{ num }}</a></li>
+{% endfor %}
+{% if pages.has_next %}
+<li><a href="?pagenum={{ pages.next_page_num }}&cate={{ cate }}&cityid={{ cityid }}&sort={{ sort }}&={{ keyword }}">下一页</a></li>
+{% endif %}
+<br>
+<br>
+<form class="rightform" id="jsStayForm">
+    <input type="text" name="name" id="companyName" placeholder="名字" maxlength="25">
+    <input type="text" name="mobile" id="companyMobile" placeholder="联系电话">
+    <input type="text" name="course_name" id="companyAddress" placeholder="课程名" maxlength="50">
+    <p class="error company-tips" id="jsCompanyTips"></p>
+    <input class="btn" type="button" id="jsStayBtn" value="立即咨询">
+</form>
+<script>
+    $(function () {
+        $('#jsStayBtn').click(function () {
+            {#如果拿的是非表单类元素用值用text()，如果是表单类元素用val()#}
+            var name=$('#companyName').val();
+            var phone=$('#companyMobile').val();
+            var course=$('#companyAddress').val();
+            $.ajax({
+                type:'POST',
+                url:'{% url 'operations:user_ask' %}',
+                data:{"name":name,"phone":phone,"course":course,"csrfmiddlewaretoken":'{{ csrf_token }}'},
+                success:function (callback) {
+                    if(callback.status=='ok'){
+                        alert(callback.msg);
+                        $('#companyName').val('');
+                        $('#companyMobile').val('');
+                        $('#companyAddress').val('');
+                        $('#jsCompanyTips').val('');
+                    }else{
+                        alert(callback.msg);
+                        $('#jsCompanyTips').text(callback.msg)
+                    }
+                }
+            });
+            {#如果不希望submit有提交动作,那么就需要在时间函数的最后返回false，阻止提交动作的发生#}
+            return false;
+        })
+    })
+</script>
+</body>
+</html>

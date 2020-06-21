@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load staticfiles %}
+<head>
+    <meta charset="UTF-8">
+    <title>公开课视频信息-谷粒教育网</title>
+</head>
+<body>
+<ul>
+    <li><a href="/">首页</a></li>
+    <li><a href="{% url 'courses:course_list' %}">公开课程</a></li>
+    <li><a href="{% url 'courses:course_detail' course.id %}">首页</a></li>
+    <li>章节信息</li>
+</ul>
+{{ course.name }}
+<span>难度：{% if course.level == 'cj' %}初级{% elif course.level == 'zj' %}中级{% else %}高级{% endif %}</span><br>
+时长:{{ course.study_time }}分钟<br>
+学习人数:{{ course.study_num }}<br>
+<a href="{% url 'courses:course_video' course.id %}">章节</a>
+<a href="{% url 'courses:course_comment' course.id %}">评论</a>
+课程公告:{{ course.course_notice }}<br>
+{% for lesson in course.lessoninfo_set.all %}
+    {{ lesson.name }}
+{% endfor %}
+{% for video in lesson.videoinfo_set.all %}
+    <a target="_blank" href="{{ video.url }}">{{ video.name }}(视频时长{{ video.study_time }})</a>
+{% endfor %}
+{% for sourse in course.sourceinfo_set.all %}
+    <a href="{{ MEDIA_URL }}{{ sourse.down_load }}" target="_blank">下载</a>
+{% endfor %}
+<a href="{% url 'orgs:teacher_detail' course.teacherinfo.id %}" target="_blank">
+    <img src="{{ MEDIA_URL }}{{ course.teacherinfo.image }}" width="80" height="80">
+</a>
+<a href="{% url 'orgs:teacher_detail' course.teacherinfo.id %}" target="_blank">{{ course.teacherinfo.name }}</a>
+<span>{{ course.teacherinfo.work_position }}</span>
+<dt>课程须知</dt>
+<dd>{{ course.course_need }}</dd>
+<dt>老师告诉你能学到什么<dd>{{ course.teacher_tell }}</dd></dt>
+<h2>学过该课的同学还学过什么</h2>
+{% for course1 in course_list %}
+    <a href="{% url 'courses:course_detail' course1.id %}">
+        <img src="{{ MEDIA_URL }}{{ course1.image }}"><span>{{ course1.name }}</span>
+    </a>
+{% endfor %}
+</body>
+</html>

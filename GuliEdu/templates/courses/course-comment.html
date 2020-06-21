@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load staticfiles %}
+<script src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<ul>
+    <li><a href="/">首页</a></li>
+    <li><a href="{% url 'courses:course_list' %}">公开课程</a></li>
+    <li><a href="{% url 'courses:course_detail' course.id %}">课程详情</a></li>
+    <li>课程评论</li>
+</ul>
+<h2>{{ course.name }}</h2>
+<span>难度：{% if course.level == 'cj' %}初级{% elif course.level == 'zj' %}中级{% else %}高级{% endif %}</span>
+时长：{{ course.study_time }}
+<span>学习人数：{{ course.study_num }}</span>
+<a href="{% url 'courses:course_video' course.id %}">章节</a>
+<a href="{% url 'courses:course_comment' course.id %}">评论</a>
+<textarea id="js-pl-textarea" placeholder="扯淡、吐槽、表扬、鼓励......想说啥就说啥"></textarea>
+<input type="button" id="js-pl-submit" class="pub-btn" data-cid="452" value="发表评论">
+<ul>
+    {% for comment in all_comments %}
+        <span><img src="{{ MEDIA_URL }}{{ comment.comment_men.image }}" width="40" height="40"></span>
+        {{ comment.comment_man.nick_name }}
+        {{ comment.comment_content }}
+        <span title="创建时间">时间：{{ comment.add_time }}</span>
+    {% endfor %}
+</ul>
+资料下载
+{% for source in course.sourceinfo_set.all %}
+    {{ source.name }}
+    <a href="{{ MEDIA_URL }}{{ source.down_load }}">下载</a>
+{% endfor %}
+<h4>讲师提示</h4>
+<a href="{% url 'orgs:teacher_detail' course.teacherinfo.id %}"><img src="{{ MEDIA_URL }}{{ course.teacherinfo.image }}" width="80" height="80"></a>
+<a href="{% url 'orgs:teacher_detail' course.teacherinfo.id %}">{{ course.teacherinfo.name }}</a>
+{{ course.teacherinfo.work_position }}
+<dt>课程须知</dt>
+<dd>{{ course.course_need }}</dd>
+<dt>老师告诉你能学到什么？</dt>
+<dd>{{ course.teacher_all }}</dd>
+<h2>学过该课的同学还学过</h2>
+{% for course1 in course_list %}
+    <li>
+        <a href="{% url 'courses:course_detail' course1.id %}">
+            <img src="{{ MEDIA_URL }}{{ course1.image }}" alt="html">
+            <span>{{ course1.name }}</span>
+        </a>
+    </li>
+{% endfor %}
+</body>
+</html>
+<script>
+    $(function () {
+        $('#js-pl-submit').click(function () {
+            var course={{ course.id }};
+            var content=$('#js-pl-textarea').val();
+            $.ajax({
+                type:'POST',
+                url:'{% url 'operations:user_comment' %}',
+                data:{
+                    course:course,
+                    content:content,
+                    csrfmiddlewaretoken:'{{ csrf_token }}'
+                },
+                success:function (callback) {
+                    if(callback.status=='ok'){
+                        alert(callback.msg)
+                        window.location.reload();
+                    }else {
+                        alert(callback.msg)
+                    }
+                }
+            })
+        })
+    })
+</script>

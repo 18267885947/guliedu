@@ -1,0 +1,183 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+{% load staticfiles %}
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>谷粒教育网</title>
+	<link rel="stylesheet" type="text/css" href="{% static 'css/reset.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+	<script type="text/javascript" src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/jquery-ui.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/slide.js' %}"></script>
+    <style type="text/css">
+        .welcome{
+            display: block;
+        }
+    	.header_con{
+			background-color:#f7f7f7;
+			height:29px;
+			border-bottom:1px solid #dddddd
+		}
+		.header_con input{
+			background-color: #666;
+			width: 100px;
+			height: 29px;
+			padding:0 10px;
+			font-size: 16px;
+			display: inline-block;
+			float: right;
+		}
+		.header_con .login_btn2{
+			margin-right: 100px;
+		}
+		.header_con img{
+			margin:50px 0 0 100px;
+		}
+		.search_con{width:616px;height:38px;border:1px solid #666;margin:34px 0 0 124px;margin-right: 100px;}
+		.search_con .input_text{width:470px;height:34px;border:0px;margin:2px 0 0 36px;outline:none;font-size:12px;color:#666;font-family:'Microsoft Yahei'}
+		.search_con .input_btn{
+			width:100px;height:37px;background-color:#666;border:0px;font-size:14px;color:#fff;font-family:'Microsoft Yahei';outline:none;cursor:pointer;
+		}
+		.navigation{
+			background-color:#666;
+			height:29px;
+			border:1px solid #dddddd;
+			margin:100px 0 0 0;
+		}
+		.navigation_con{
+			margin: 0 0 0 100px;
+		}
+		.navigation_entry{
+			display: inline-block;
+			height: 27px;
+			padding: 0 20px 0 20px;
+			margin-left:-2px;
+		}
+		.navigation_con a{
+			color: white;
+			line-height: 29px;
+		}
+		.navigation_entry:hover{
+			background-color: green;
+		}
+        .slide_image{
+            width:760px;
+            height: 270px;
+        }
+        .feature{
+            width: 100px;
+            height: 100px;
+            display: inline-block;
+            margin: 0 125px;
+        }
+        .feature p{text-align: center}
+        .course_title{font-size: 48px;text-align: center}
+    </style>
+</head>
+<body>
+<div class="header_con">
+    <div class="welcome">欢迎{{ user }}</div>
+    <a href="{% url 'users:user_logout' %}" class="">退出</a>
+    <a href="{% url 'users:user_register' %}" class="login_btn2">注册</a>
+    <a href="{% url 'users:user_login' %}" class="login_btn1">登录</a>
+    <a href="{% url 'users:user_info' %}" class="login_btn1">个人中心</a>
+	<img src="{% static 'images/logo_download.png' %}" class="logo_image">
+    {% if request.user.is_authenticated %}<a href="{% url 'users:user_message' %}">消息:{{ request.user.get_msg_count }}</a>{% endif %}
+</div>
+<div id="jsSelectOption">
+    <label><input type="radio" name="option" value="course">公开课</label>
+    <label><input type="radio" name="option" value="org">课程机构</label>
+    <label><input type="radio" name="option" value="teacher">授课讲师</label>
+</div>
+
+<div class="search_con fr">
+	<input type="text" class="input_text fl" name="" id="search_keywords" placeholder="请输入搜索内容">
+	<input type="button" class="input_btn fr" id="jsSearchBtn" name="" value="搜索">
+</div>
+<div class="navigation">
+	<div class="navigation_con">
+		<a href="/" class="navigation_entry">首页</a>
+		<a href="{% url 'courses:course_list' %}" class="navigation_entry">公开课</a>
+		<a href="{% url 'orgs:teacher_list' %}" class="navigation_entry">授课教师</a>
+		<a href="{% url 'orgs:org_list' %}" class="navigation_entry">授课机构</a>
+	</div>
+</div>
+<div class="center_con clearfix">
+    <ul class="subnav fl"></ul>
+    <div class="slide fl">
+        <ul class="slide_pics">
+            {% for banner in all_banners %}
+            <li><img class="slide_image" src="{{ MEDIA_URL }}{{ banner.image }}" alt="幻灯片"></li>
+            {% endfor %}
+        </ul>
+        <div class="prev"></div>
+        <div class="next"></div>
+        <ul class="points"></ul>
+    </div>
+</div>
+<li class="feature"><img width="100" height="100" src="{% static 'images/feature.jpeg' %}" alt="专业权威"/><p>专业权威</p></li>
+<li class="feature"><img width="100" height="100" src="{% static 'images/feature.jpeg' %}" alt="课程最新"/><p>课程最新</p></li>
+<li class="feature"><img width="100" height="100" src="{% static 'images/feature.jpeg' %}" alt="名师授课"/><p>名师授课</p></li>
+<li class="feature"><img width="100" height="100" src="{% static 'images/feature.jpeg' %}" alt="数据真实"/><p>数据真实</p></li>
+<h1 class="course_title">公开课程</h1>
+<h1 style="text-align: center">名师授课专业权威</h1><p style="text-align: center"><a href="{% url 'courses:course_list' %}">查看更多课程</a></p>
+{% for banner in banner_courses %}
+    <li style="display: inline-block"><a href="{% url 'courses:course_detail' banner.id %}"><img width="470" height="300" src="{{ MEDIA_URL }}{{ banner.image }}" alt=""/></a></li>
+{% endfor %}
+<div style="margin:0 100px;">
+    {% for course in all_courses %}
+        <div style="width: 202px;height: 289px;border: 1px solid #AAAAAA;display: inline-block;margin-left: 20px">
+            <a href="{% url 'courses:course_detail' course.id %}"><img style="width: 201px;height:190px;" src="{{ MEDIA_URL }}{{ course.image }}" alt=""/></a>
+            <div style="font-size: 24px">{{ course.name }}</div>
+            <div style="display: inline-block">难度:</div><div style="display: inline-block;font-size: 20px;color: red">{% if course.level == 'gj' %}高级{% elif course.level == 'zj' %}中级{% else %}初级{% endif %}</div>
+            <div style="display: inline-block">学习人数:{{ course.study_num }}</div>
+            <div style="display:inline-block;margin-top:10px;width: 135px;height: 29px;background-color: #9f9f9f;text-align: center;line-height: 29px">谷粒教育网</div>
+            <div style="display:inline-block;margin-top:2px;width: 62px;height: 29px;background-color: #9f9f9f;text-align: center;line-height: 29px">收藏:{{ course.love_num }}</div>
+        </div>
+    {% endfor %}
+</div>
+
+	<dt><a href="http://www.atguigu.com/contant.shtml" style="color:#ffffff;" target="_blank">联系我们</a></dt>
+    <dd>电话：010-56253825</dd>
+    <dd>邮箱：info@atguigu.com</dd>
+    <dd>地址：北京市昌平区宏福科技园综合楼6层（北京校区）
+        <p style="line-height:10px; text-indent:3em;">&nbsp;深圳市宝安区西部硅谷大厦B座C区一层（深圳校区）</p><p style="line-height:37px; text-indent:3em;">上海市松江区谷阳北路166号大江商厦6层（上海校区）</p>
+    </dd>
+</body>
+<div class="copyright">网站版权归北京晟程华科教育科技有限公司所有<a href="http://www.beian.miit.gov.cn" target="_blank" style="padding:0px 10px;">京ICP备13018369号</a></div>
+</html>
+<script>
+    $(function () {
+        $('#jsSearchBtn').click(function () {
+            var search_type=$("input[type='radio']:checked").val();
+            alert(search_type);
+            var key_word=$('#search_keywords').val();
+            alert(key_word);
+            var url='';
+            if(search_type=='org'){
+                url='{% url 'orgs:org_list' %}'
+            }else if(search_type=='course'){
+                url='{% url 'courses:course_list' %}'
+            }else {
+                url='{% url 'orgs:teacher_list' %}'
+            }
+            url=url+'?keyword='+key_word
+            alert(url)
+            window.location.href=url
+        })
+    })
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+

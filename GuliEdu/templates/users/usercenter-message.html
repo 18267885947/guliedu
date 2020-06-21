@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>我的消息-谷粒教育网</title>
+    {% load staticfiles %}
+    <script src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
+</head>
+<body>
+<li><a href="/">首页</a>>个人中心>我的信息</li><br>
+<ul>
+    <li><a href="{% url 'users:user_info' %}">个人资料</a></li>
+    <li><a href="{% url 'users:user_course' %}">我的课程</a></li>
+    <li><a href="{% url 'users:user_love' %}">我的收藏</a></li>
+    <li><a href="{% url 'users:user_message' %}">我的信息</a></li>
+</ul>
+<h1>我的消息</h1>
+{% for msg in msg_list %}
+    <input {% if not msg.message_status %}style="color:hotpink"{% endif %} type="button" class="message" value="消息时间:{{ msg.add_time }}&nbsp;消息内容:{{ msg.message_content }}" msg-id="{{ msg.id }}">
+    <br>
+{% endfor %}
+</body>
+</html>
+<script>
+    $(function () {
+        $('.message').click(function () {
+            var delete_id=$(this).attr('msg-id');
+            $.ajax({
+                type:'GET',
+                url:'{% url 'users:user_deletemessage' %}',
+                data:{delete_id:delete_id},
+                success:function (callback) {
+                    if(callback.status=='ok'){
+                        window.location.reload()
+                    }else {
+                        alert(callback.msg)
+                    }
+                }
+            })
+        })
+    })
+</script>
+
+
+
+
+
+
+
+

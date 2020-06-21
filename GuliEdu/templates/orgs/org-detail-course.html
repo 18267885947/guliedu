@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<ul>
+    <li><a href="{% url 'orgs:org_detail' org.id %}">机构首页</a></li>
+    <li><a href="{% url 'orgs:org_detail_course' org.id %}">机构课程</a></li>
+    <li><a href="{% url 'orgs:org_detail_desc' org.id %}">机构介绍</a></li>
+    <li><a href="{% url 'orgs:org_detail_teacher' org.id %}">机构讲师</a></li>
+</ul>
+<h1>机构课程</h1>
+{% for course in pages %}
+    <a href="{% url 'courses:course_detail' course.id %}"><img width="214" height="195" src="{{ MEDIA_URL }}{{ course.image }}"></a>
+    <a href="{% url 'courses:course_detail' course.id %}"><h2>{{ course.name }}</h2></a>
+    课时：{{ course.study_time }}
+    学习人数:{{ course.study_num }}
+    机构:{{ org.name }}
+    收藏人数：{{ course.love_num }}
+{% endfor %}
+{% if pages.has_previous %}
+<li><a href="?pagenum={{ pages.previous_page_number }}">上一页</a></li>
+{% endif %}
+{% for num in pages.paginator.page_range %}
+<li><a href="?pagenum={{ num }}">{{ num }}</a></li>
+{% endfor %}
+{% if pages.has_next %}
+<li><a href="?pagenum={{ pages.next_page_num }}">下一页</a></li>
+{% endif %}
+</body>
+</html>

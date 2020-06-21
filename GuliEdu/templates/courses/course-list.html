@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>公开课列表-谷粒教育网</title>
+</head>
+<body>
+<li><a href="/">首页</a>>公开课</li><br>
+<ul>
+    <li><a href="?sort=">最新</a></li>
+    <li><a href="?sort=click_num">最热门</a></li>
+    <li><a href="?sort=study_num">参与人数</a></li>
+</ul>
+{% for course in all_courses %}
+    <div style="display: inline-block">
+        <a href="{% url 'courses:course_detail' course.id %}">
+        <img width="280" height="350" src="{{ MEDIA_URL }}{{ course.image }}">
+        </a>
+        <a href="{% url 'courses:course_detail' course.id %}"><h2>{{ course.name }}</h2></a>
+        <span>时长:{{ course.study_time }}</span>
+        <span>学习人数：{{ course.study_num }}</span>
+        <a href="{% url 'courses:course_detail' course.id %}"><span>来自{{ course.orginfo.name }}</span></a>
+        收藏数：{{ course.love_num }}
+    </div>
+{% endfor %}
+<div>热门课程推荐</div>
+{% for course in recomment_courses %}
+    <a target="_blank" href="{% url 'courses:course_detail' course.id %}">
+        <img width="240" height="220" src="{{ MEDIA_URL }}{{ course.image }}">
+    </a>
+    <a target="_blank" href="{% url 'courses:course_detail' course.id %}"><h2>{{ course.name }}</h2></a>
+    <span>难度：{% if course.level == 'cj' %}初级{% elif course.level == 'zj' %}中级{% else %}高级{% endif %}</span>
+{% endfor %}
+{% if pages.has_previous %}
+<li><a href="?pagenum={{ pages.previous_page_number }}&sort={{ sort }}&keyword={{ keyword }}">上一页</a></li>
+{% endif %}
+{% for num in pages.paginator.page_range %}
+<li><a href="?pagenum={{ num }}&sort={{ sort }}&keyword={{ keyword }}">{{ num }}</a></li>
+{% endfor %}
+{% if pages.has_next %}
+<li><a href="?pagenum={{ pages.next_page_number }}&sort={{ sort }}&keyword={{ keyword }}">下一页</a></li>
+{% endif %}
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

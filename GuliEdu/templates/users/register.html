@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>注册</title>
+</head>
+<body>
+<a href="{% url 'users:user_login' %}">[登录]</a>
+<form method="post" action="{% url 'users:user_register' %}">
+    {% csrf_token %}
+    邮箱:<input type="text" id="email" name="email">
+    密码:<input type="password" id="password" name="password">
+    验证码:{{ user_register_form.captcha }}
+    <input type="submit" id="register" value="立即注册">
+    <div class="error btns" id="jsEmailTips">
+        {{ msg }}
+        {% for key,err in user_register_form.errors.items %}
+            {{ err }}
+        {% endfor %}
+    </div>
+</form>
+</body>
+</html>

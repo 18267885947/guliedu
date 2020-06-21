@@ -1,0 +1,51 @@
+在setting.py中设置：
+DEBUG = False
+
+ALLOWED_HOSTS = ['*']
+
+
+安装uwsgi命令:pip install uwsgi
+在项目主目录下新建一个ini结尾的文件，写入配置内容
+[uwsgi]
+socket=127.0.0.1:8006
+;http=127.0.0.1:8000
+chdir =/Users/lixiangpeng/virtualenv/guliedu/GuliEdu
+#指定项目的application
+wsgi-file=GuliEdu/wsgi.py
+#指定启动的工作进程数
+processes=4
+#指定工作启动的线程数
+threads=2
+master=True
+#保存主进程的pid
+pidfile=uwsgi3.pid
+#设置uwsgi后台运行，uwsgi.log保存日志信息
+daemonize=uwsgi3.log
+stats = 127.0.0.1:9193
+
+启动uwsgi服务器命令:uwsgi --ini [文件名].ini     停止uwsgi服务器命令:uwsgi --stop [文件名].pid
+
+下载Nginx命令:pip install nginx
+
+去/usr/local/etc/nginx下 ，复制nginx.conf.default为nginx.conf，在nginx.conf中添加内容:
+    upstream GuliEdu{
+        server 127.0.0.1:8006;
+}
+    server {
+        listen       8002;
+        server_name  localhost;
+        location / {
+            include uwsgi_params;
+            # uwsgi_pass 127.0.0.1:3031;
+            uwsgi_pass GuliEdu;
+        }
+        location /static{
+            alias /Users/lixiangpeng/virtualenv/guliedu/GuliEdu/static;
+        }
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+    }
+
+重启Nginx命令:sudo /usr/local/etc/nginx/bin/nginx -s reload

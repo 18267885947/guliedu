@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>忘记密码</title>
+</head>
+<body>
+<h2>忘记密码</h2>
+<form method="post" action="{% url 'users:user_forget'%}">
+    {% csrf_token %}
+    账号：<input type="text" name="email" value="None" placeholder="邮箱"><br>
+    验证码:{{ user_forget_form.captcha }}<br>
+    <input type="submit" value="提交"><br>
+    您还可以<a href="{% url 'users:user_login' %}">直接登录</a>
+    <div class="error btns" id="jsEmailTips">
+        {{ msg }}
+        {% for key,err in user_forget_form.errors.items %}
+            {{ err }}
+        {% endfor %}
+    </div>
+</form>
+</body>
+</html>

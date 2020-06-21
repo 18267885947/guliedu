@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>机构首页</title>
+    {% load staticfiles %}
+    <script src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+</head>
+<body>
+<li><a href="/">首页</a><a href="{% url 'courses:course_list' %}">>公开课</a> >机构首页</li><br>
+<input class="btn fr collectionbtn notlogin" id="love" type="button" value="{% if lovestatus %}取消收藏{% else %}收藏{% endif %}">
+<ul>
+    <li><a href="{% url 'orgs:org_detail' org.id %}">机构首页</a></li>
+    <li><a href="{% url 'orgs:org_detail_course' org.id %}">机构课程</a></li>
+    <li><a href="{% url 'orgs:org_detail_desc' org.id %}">机构介绍</a></li>
+    <li><a href="{% url 'orgs:org_detail_teacher' org.id %}">机构讲师</a></li>
+</ul>
+<h1>全部课程</h1>
+<a href="{% url 'courses:course_list' %}">查看更多</a>
+<li><a href="/">首页</a>><a href="">课程机构</a>>机构首页</li><br>
+{% for course in org.courseinfo_set.all %}
+    <a href="{% url 'courses:course_detail' course.id %}"><img src="{{ MEDIA_URL }}{{ course.image }}"></a>
+    <a href="{% url 'courses:course_detail' course.id %}"><h2>{{ course.name }}</h2></a>
+    <span>课时：{{ course.study_time }}</span>
+    <span>参数人数:{{ course.study_num }}</span>
+    <span>机构名称:{{ org.name }}</span>
+    <span>收藏数:{{ course.love_num }}</span>
+    <br>
+{% endfor %}
+<h1>机构讲师</h1>
+<a href="{% url 'orgs:teacher_list' %}">查看更多</a>
+{% for teacher in org.teacherinfo_set.all %}
+    讲师头像<img width="100" height="100" src="{{ MEDIA_URL }}{{ teacher.image }}">
+    <a href="">{{ teacher.courseinfo_set.all.0 }}</a>
+    <p>昵称：{{ teacher.name }}</p>
+    发表于:{{ teacher.courseinfo_set.all.0.add_time }}
+    课程介绍：{{ teacher.courseinfo_set.all.0.desc }}
+    <br>
+{% endfor %}
+<h1>机构介绍</h1>
+<a href="{% url 'orgs:org_list' %}">查看更多</a>
+<P>{{ org.desc }}</P>
+<script>
+    $('#love').click(function () {
+        var loveid={{ org.id }};
+        var lovetype=1;
+        $.ajax({
+            type:'GET',
+            url:'{% url 'operations:user_love' %}',
+            data:{
+                loveid:loveid,
+                lovetype:lovetype
+            },
+            success:function (callback) {
+                if(callback.status=='ok'){
+                    $('#love').text(callback.msg)
+                    window.location.reload()
+                }else {
+                    alert(callback.msg)
+                }
+            }
+        })
+    })
+</script>
+</body>
+</html>

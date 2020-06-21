@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load staticfiles %}
+<head>
+    <meta charset="UTF-8">
+    <title>讲师详情-谷粒教育网</title>
+    <script src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
+</head>
+<body>
+<ul>
+    <li><a href="/">首页</a></li>
+    <li><a href="{% url 'orgs:teacher_list' %}">授课讲师</a></li>
+    <li>讲师详情</li>
+</ul>
+<img src="{{ MEDIA_URL }}{{ teacher.image }}">
+<input id="jsLeftBtn" type="button" value="{% if loveteacher %}取消收藏{% else %}收藏{% endif %}">
+<a href="{% url 'orgs:teacher_detail' teacher.id %}">
+    <h1>{{ teacher.name }}金牌讲师</h1>
+</a>
+<ul>
+    <li>工作年限:<span>{{ teacher.work_year }}</span></li>
+    <li>工作职位:<span>{{ teacher.work_position }}</span></li>
+    <li>就职公司:<span>{{ teacher.work_company.name }}</span></li>
+    <li>教学特点:<span>{{ teacher.work_style }}</span></li>
+</ul>
+<a href="{% url 'courses:course_list' %}"><h1>全部课程</h1></a>
+{% for course in teacher.courseinfo_set.all %}
+    <a href="{% url 'courses:course_detail' course.id %}"><img src="{{ MEDIA_URL }}{{ course.image }}"></a>
+    <a href="{% url 'courses:course_detail' course.id %}"><h2>{{ course.name }}</h2></a>
+    <span>时长：{{ course.study_time }}</span>
+    <span>学习人数:{{ course.study_num }}</span>
+    来自:{{ course.orginfo.name }}
+    {{ course.love_num }}
+{% endfor %}
+<h1>{{ teacher.work_company.name }}</h1>
+<p>{{ teacher.work_company.desc }}</p>
+<a href="{% url 'orgs:org_detail' teacher.work_company.id %}"><img width="180" height="80" src="{{ MEDIA_URL }}{{ teacher.work_company.image }}"></a>
+<a href="{% url 'orgs:org_detail' teacher.work_company.id %}"><h2>{{ teacher.work_company.name }}</h2></a>
+<p>地址：{{ teacher.work_company.address }}</p>
+<input id="jsRightBtn" type="button" value="{% if loveorg %}取消收藏{% else %}收藏{% endif %}">
+<a></a>
+<div>讲师排行榜</div>
+{% for teacher1 in sort_teachers %}
+    {{ forloop.counter }}
+    <a href="{% url 'orgs:teacher_detail' teacher1.id %}"><img width="50" height="50" src="{{ MEDIA_URL }}{{ teacher1.image }}"></a>
+    <a href="{% url 'orgs:teacher_detail' teacher1.id %}"><h1 title="{{ teacher1.name }}">{{ teacher1.name }}</h1></a>
+    <p>工作年限:{{ teacher1.work_year }}年</p>
+{% endfor %}
+</body>
+</html>
+<script>
+    $(function () {
+        $('#jsLeftBtn').click(function () {
+            var loveid={{ teacher.id }};
+            var lovetype=3;
+            $.ajax({
+                type:'GET',
+                url:'{% url 'operations:user_love' %}',
+                data:{
+                    lovetype:lovetype,
+                    loveid:loveid
+                },
+                success:function (callback) {
+                    if(callback.status=='ok'){
+                        $('#jsLeftBtn').text(callback.msg)
+                        window.location.reload()
+                    }else {
+                        alert(callback.msg)
+                    }
+                }
+            })
+        });
+        $('#jsRightBtn').click(function () {
+            var loveid={{ teacher.work_company.id }};
+            var lovetype=1;
+            $.ajax({
+                type:'GET',
+                url:'{% url 'operations:user_love' %}',
+                data:{
+                    lovetype:lovetype,
+                    loveid:loveid
+                },
+                success:function (callback) {
+                    if(callback.status=='ok'){
+                        $('#jsLeftBtn').text(callback.msg)
+                        window.location.reload()
+                    }else {
+                        alert(callback.msg)
+                    }
+                }
+            })
+        })
+    })
+</script>

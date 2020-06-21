@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load staticfiles %}
+<script src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
+<head>
+    <meta charset="UTF-8">
+    <title>公开课详情-谷粒教育网</title>
+</head>
+<body>
+<ul>
+    <li><a href="/">首页</a></li>
+    <li><a href="{% url 'courses:course_list' %}">公开课程</a></li>
+    <li>课程详情</li>
+</ul>
+<img width="440" height="445" src="{{ MEDIA_URL}}{{ course.image }}">
+<h1 title="{{ course.name }}">{{ course.name }}</h1>
+<span>{{ course.desc }}</span>
+<span>难度：{% if course.level == 'cj' %}初级{% elif course.level == 'zj' %}中级{% else %}高级{% endif %}</span>
+时长：{{ course.study_time }}
+章节数:{{ course.lessoninfo_set.count }}
+课程类别:{% if course.level == 'qd' %}前端开发{% else %}后端开发{% endif %}
+学习用户:
+{% for usercourse in course.usercourse_set.all|slice:':6' %}
+    <span><img width="40" height="40" src="{{ MEDIA_URL }}{{ usercourse.study_man.image }}"></span>
+{% endfor %}
+<input id="jsLeftBtn" type="button" value="{% if lovecourse %}取消收藏{% else %}收藏{% endif %}">
+<a href="{% url 'courses:course_video' course.id %}">开始学习</a>
+<h1>授课机构</h1>
+<P>世界名校，课程权威</P>
+<a href="{% url 'orgs:org_detail' course.orginfo.id %}"><img width="150" height="80" src="{{ MEDIA_URL }}{{ course.orginfo.image }}"></a>
+<a href="{% url 'orgs:org_detail' course.orginfo.id %}"><h2 title="{{ course.orginfo.name }}">{{ course.orginfo.name }}</h2></a>
+课程数:{{ course.orginfo.course_num }}
+教师数:{{ course.orginfo.teacherinfo_set.count }}
+所在地区:{{ course.orginfo.city.name }}
+认证:<img title="金牌机构" src="{% static 'images/gold.jpeg' %}">
+<h2>课程详情</h2>
+<p>{{ course.detail }}</p>
+<div>相关课程推荐</div>
+{% for relate in relate_courses %}
+    <a target="_blank" href="{% url 'courses:course_detail' relate.id %}"><img width="240" height="220" src="{{ MEDIA_URL }}{{ relate.image }}"></a>
+    <dd>
+        <a target="_blank" href=""><h2>{{ relate.name }}</h2></a>
+        学习时长:{{ relate.study_time }}
+    </dd>
+{% endfor %}
+</body>
+</html>
+<script>
+    $(function () {
+        $('#jsLeftBtn').click(function () {
+            var loveid={{ course.id }};
+            var lovetype=2;
+            $.ajax({
+                type:'GET',
+                url:'{% url 'operations:user_love' %}',
+                data:{
+                    lovetype:lovetype,
+                    loveid:loveid
+                },
+                success:function (callback) {
+                    if(callback.status=='ok'){
+                        $('#jsLeftBtn').text(callback.msg)
+                        window.location.reload()
+                    }else {
+                        alert(callback.msg)
+                    }
+                }
+            })
+        })
+    })
+</script>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<li><a href="/">首页</a>>授课教师</li><br>
+<ul>
+    <li><a href="">全部</a></li>
+    <li><a href="?sort=click_num">人气</a></li>
+</ul>
+<div>共{{ all_teachers.count }}</div>
+{% for teacher in all_teachers %}
+    <a href="{% url 'orgs:teacher_detail' teacher.id %}"><img width="100" height="100" src="{{ MEDIA_URL }}{{ teacher.image }}"></a>
+    <a href="{% url 'orgs:teacher_detail' teacher.id %}"><h1>{{ teacher.name }}<span>金牌讲师</span></h1></a>
+    <ul>
+        <li>工作年限:<span>{{ teacher.work_year }}</span></li>
+        <li>工作职位:<span>{{ teacher.work_position }}</span></li>
+        <li>就职公司:<span>{{ teacher.work_company.name }}</span></li>
+        <li>年龄:<span>{{ teacher.age }}</span></li>
+        <li>教学特点:<span>{{ teacher.work_style }}</span></li>
+    </ul>
+    <a href="{% url 'orgs:teacher_detail' teacher.id %}"><br>查看<br>详情</a>
+{% endfor %}
+<div>讲师排行榜</div>
+{% for teacher in sort_teachers %}
+    {{ forloop.counter }}
+    <a href="{% url 'orgs:teacher_detail' teacher.id %}"><img height="50" width="50" src="{{ MEDIA_URL }}{{ teacher.image }}"></a>
+    <a href="{% url 'orgs:teacher_detail' teacher.id %}"><h1 title="{{ teacher.name }}">{{ teacher.name }}</h1></a>
+    <p>工作年限:<span>{{ teacher.work_year }}</span></p>
+{% endfor %}
+<ul>
+    {% if pages.has_previous %}
+    <li><a href="?pagenum={{ pages.previous_page_number }}&sort={{ sort }}&keyword={{ keyword }}">上一页</a></li>
+    {% endif %}
+    {% for num in pages.paginator.page_range %}
+    <li><a href="?pagenum={{ num }}&sort={{ sort }}&keyword={{ keyword }}">{{ num }}</a></li>
+    {% endfor %}
+    {% if pages.has_next %}
+    <li><a href="?pagenum={{ pages.next_page_num }}&sort={{ sort }}&keyword={{ keyword }}">下一页</a></li>
+    {% endif %}
+</ul>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

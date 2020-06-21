@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load staticfiles %}
+<script src="{% static 'js/jquery-1.12.4.min.js' %}"></script>
+<style>
+    .des{
+        display: inline-block;
+    }
+</style>
+<head>
+    <meta charset="UTF-8">
+    <title>谷粒教育网-我的收藏</title>
+</head>
+<body>
+<li><a href="/">首页</a>>个人中心>我的收藏</li><br>
+<ul>
+    <li><a href="{% url 'users:user_info' %}">个人资料</a></li>
+    <li><a href="{% url 'users:user_course' %}">我的课程</a></li>
+    <li><a href="{% url 'users:user_love' %}">我的收藏</a></li>
+    <li><a href="{% url 'users:user_message' %}">我的信息</a></li>
+</ul>
+<h1>已收藏机构</h1>
+{% for org in org_list %}
+    <dl class="des">
+        <a href="{% url 'orgs:org_detail' org.id %}"><img width="160" height="90" src="{{ MEDIA_URL }}{{ org.image }}"></a>
+        <a href="{% url 'orgs:org_detail' org.id %}">{{ org.name }}</a>
+        <img width="50" height="50" src="{% static 'images/gold.jpeg' %}">
+        <span>地址:{{ org.address }}</span>
+        <input class="delete" type="button" value="删除" data-favid="{{ org.id }}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    </dl>
+{% endfor %}
+<h1>已收藏课程</h1>
+{% for course in course_list %}
+    <dl class="des2">
+        <a href="{% url 'courses:course_detail' course.id %}"><img width="214" height="190" src="{{ MEDIA_URL }}{{ course.image }}"></a>
+        <a href="{% url 'courses:course_detail' course.id %}">{{ course.name }}</a>
+        时长:{{ course.study_time }}
+        学习人数:{{ course.study_num }}
+        机构名称:{{ course.orginfo.name }}
+        <input class="delete-group" type="button" value="删除" data-favid="{{ course.id }}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    </dl>
+{% endfor %}
+<h1>已收藏讲师</h1>
+{% for teacher in teacher_list %}
+    <dl class="des3">
+        <a href="{% url 'orgs:teacher_detail' teacher.id %}"><img width="100" height="100" src="{{ MEDIA_URL }}{{ teacher.image }}"></a>
+        <a href="{% url 'orgs:teacher_detail' teacher.id %}">{{ teacher.name }}</a>
+        工作年限:{{ teacher.work_year }}年
+        课程数:{{ teacher.courseinfo_set.count }}
+        工作公司:{{ teacher.work_company.name }}
+        公司职位:{{ teacher.work_position }}
+        <input class="delete-group2" type="button" value="删除" data-favid="{{ teacher.id }}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    </dl>
+{% endfor %}
+</body>
+</html>
+<script>
+    $(function () {
+        $('.delete').click(function () {
+            {#prop用来取元素自带属性的值或者设置值，attr用来取元素自定义的属性的值或设置值#}
+            var loveid=$(this).attr('data-favid');
+            var lovetype=1;
+            var obj=$(this)
+            $.ajax({
+                type:'GET',
+                url:'{% url 'operations:user_deletelove' %}',
+                data:{
+                    loveid:loveid,
+                    lovetype:lovetype
+                },
+                success:function (callback) {
+                    if(callback.status=='ok'){
+                        alert(callback.msg);
+                        obj.parents('.des').remove()
+                    }else {
+                        alert(callback.msg)
+                    }
+                }
+            })
+        });
+        $('.delete-group').click(function () {
+            {#prop用来取元素自带属性的值或者设置值，attr用来取元素自定义的属性的值或设置值#}
+            var loveid=$(this).attr('data-favid');
+            var lovetype=2;
+            var obj=$(this);
+            $.ajax({
+                type:'GET',
+                url:'{% url 'operations:user_deletelove' %}',
+                data:{
+                    loveid:loveid,
+                    lovetype:lovetype
+                },
+                success:function (callback) {
+                    if(callback.status=='ok'){
+                        alert(callback.msg);
+                        obj.parents('.des2').remove()
+                    }else {
+                        alert(callback.msg)
+                    }
+                }
+            })
+        });
+        $('.delete-group2').click(function () {
+            {#prop用来取元素自带属性的值或者设置值，attr用来取元素自定义的属性的值或设置值#}
+            var loveid=$(this).attr('data-favid');
+            var lovetype=3;
+            var obj=$(this);
+            $.ajax({
+                type:'GET',
+                url:'{% url 'operations:user_deletelove' %}',
+                data:{
+                    loveid:loveid,
+                    lovetype:lovetype
+                },
+                success:function (callback) {
+                    if(callback.status=='ok'){
+                        alert(callback.msg);
+                        obj.parents('.des3').remove()
+                    }else {
+                        alert(callback.msg)
+                    }
+                }
+            })
+        })
+    })
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
